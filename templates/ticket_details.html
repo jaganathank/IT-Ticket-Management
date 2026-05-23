@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket #{{ ticket['id'] }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="layout-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <h2>IT Ticket</h2>
+                <span>{{ 'IT' if user['role'] == 'it' else 'Employee' }} Portal</span>
+            </div>
+            <nav>
+                {% if user['role'] == 'employee' %}
+                    <a href="{{ url_for('employee_dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('raise_ticket') }}">Raise Ticket</a>
+                {% else %}
+                    <a href="{{ url_for('it_dashboard') }}">Overview</a>
+                    <a href="{{ url_for('manage_tickets') }}">Manage Tickets</a>
+                {% endif %}
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </nav>
+        </aside>
+        <main class="content">
+            <header class="page-header">
+                <div>
+                    <h1>Ticket #{{ ticket['id'] }}</h1>
+                    <p>{{ ticket['title'] }}</p>
+                </div>
+                <div class="header-action">
+                    <span class="status-badge status-{{ ticket['status']|replace(' ', '-') }}">{{ ticket['status'] }}</span>
+                </div>
+            </header>
+
+            <section class="panel ticket-detail-panel">
+                <div class="detail-grid">
+                    <div>
+                        <strong>Category</strong>
+                        <p>{{ ticket['category'] }}</p>
+                    </div>
+                    <div>
+                        <strong>Priority</strong>
+                        <p>{{ ticket['priority'] }}</p>
+                    </div>
+                    <div>
+                        <strong>Severity</strong>
+                        <p>{{ ticket['severity'] }}</p>
+                    </div>
+                    <div>
+                        <strong>Assigned To</strong>
+                        <p>{{ assignee['fullname'] if assignee else 'Not assigned' }}</p>
+                    </div>
+                </div>
+                <div class="ticket-description">
+                    <h3>Description</h3>
+                    <p>{{ ticket['description'] }}</p>
+                </div>
+                {% if user['role'] == 'it' %}
+                    <div class="ticket-actions">
+                        <form method="post" class="action-panel">
+                            <input type="hidden" name="action" value="assign">
+                            <label>Assign to team member</label>
+                            <select name="assigned_to">
+                                <option value="">Unassigned</option>
+                                {% for tech in technicians %}
+                                    <option value="{{ tech['id'] }}" {% if assignee and tech['id'] == assignee['id'] %}selected{% endif %}>{{ tech['fullname'] }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="button button-secondary">Update Assignee</button>
+                        </form>
+
+                        <form method="post" class="action-panel">
+                            <input type="hidden" name="action" value="status">
+                            <label>Update ticket status</label>
+                            <select name="status">
+                                {% for status in status_options %}
+                                    <option value="{{ status }}" {% if ticket['status'] == status %}selected{% endif %}>{{ status }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="button button-secondary">Save Status</button>
+                        </form>
+
+                        <form method="post" class="action-panel">
+                            <input type="hidden" name="action" value="resolution">
+                            <label>Resolution notes</label>
+                            <textarea name="resolution_notes" rows="4" placeholder="Add the final resolution details">{{ ticket['resolution_notes'] or '' }}</textarea>
+                            <button type="submit" class="button button-secondary">Save Notes</button>
+                        </form>
+                    </div>
+                {% endif %}
+                <div class="ticket-activity">
+                    <div>
+                        <h3>Activity timeline</h3>
+                        <div class="activity-list">
+                            {% for activity in activities %}
+                                <div class="activity-item">
+                                    <div>
+                                        <strong>{{ activity['description'] }}</strong>
+                                        <span>{{ activity['fullname'] }} • {{ activity['created_at'][:19].replace('T',' ') }}</span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3>Comments</h3>
+                        <div class="comment-list">
+                            {% for comment in comments %}
+                                <div class="comment-item">
+                                    <p>{{ comment['comment'] }}</p>
+                                    <span>{{ comment['fullname'] }} • {{ comment['created_at'][:19].replace('T',' ') }}</span>
+                                </div>
+                            {% else %}
+                                <p class="muted">No comments yet.</p>
+                            {% endfor %}
+                        </div>
+                        <form method="post" class="comment-form">
+                            <input type="hidden" name="action" value="comment">
+                            <textarea name="comment" rows="3" placeholder="Add a comment..."></textarea>
+                            <button type="submit" class="button button-primary">Post Comment</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

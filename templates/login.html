@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Ticket Management | Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="page-shell login-shell">
+        <div class="form-panel">
+            <div class="brand-bar">
+                <h1>IT Ticket Management</h1>
+                <p>Sign in to manage your tickets</p>
+            </div>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="alerts">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <form method="post" class="auth-form">
+                <label>Username</label>
+                <input type="text" name="username" required placeholder="Enter your username">
+                <label>Password</label>
+                <input type="password" name="password" required placeholder="Enter your password">
+                <button type="submit" class="button button-primary">Login</button>
+                <p class="muted">Employee demo: employee1 / password1<br>IT demo: it1 / passwordit</p>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

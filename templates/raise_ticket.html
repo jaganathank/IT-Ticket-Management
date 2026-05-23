@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raise Ticket</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="layout-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <h2>IT Ticket</h2>
+                <span>Employee Portal</span>
+            </div>
+            <nav>
+                <a href="{{ url_for('employee_dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('raise_ticket') }}" class="active">Raise Ticket</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </nav>
+        </aside>
+        <main class="content">
+            <header class="page-header">
+                <div>
+                    <h1>Raise a new support ticket</h1>
+                    <p>Describe your issue clearly so IT support can respond faster.</p>
+                </div>
+            </header>
+
+            <section class="panel">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="alerts">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+                <form method="post" class="form-grid">
+                    <label>Issue Title</label>
+                    <input type="text" name="title" required placeholder="Enter a short summary">
+
+                    <label>Category</label>
+                    <select name="category" required>
+                        {% for category in categories %}
+                            <option value="{{ category }}">{{ category }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label>Priority</label>
+                    <select name="priority" required>
+                        {% for option in priorities %}
+                            <option value="{{ option }}">{{ option }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label>Severity</label>
+                    <select name="severity" required>
+                        {% for option in severities %}
+                            <option value="{{ option }}">{{ option }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label>Description</label>
+                    <textarea name="description" rows="6" required placeholder="Provide as much detail as possible."></textarea>
+
+                    <div class="form-controls">
+                        <a href="{{ url_for('employee_dashboard') }}" class="button button-tertiary">Cancel</a>
+                        <button type="submit" class="button button-primary">Submit Ticket</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

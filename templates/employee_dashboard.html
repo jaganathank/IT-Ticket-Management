@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="layout-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <h2>IT Ticket</h2>
+                <span>Employee Portal</span>
+            </div>
+            <nav>
+                <a href="{{ url_for('employee_dashboard') }}" class="active">Dashboard</a>
+                <a href="{{ url_for('raise_ticket') }}">Raise Ticket</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </nav>
+        </aside>
+        <main class="content">
+            <header class="page-header">
+                <div>
+                    <h1>Welcome, {{ user['fullname'] }}</h1>
+                    <p>Track your support requests and see personal ticket metrics.</p>
+                </div>
+                <div class="header-action">
+                    <a href="{{ url_for('raise_ticket') }}" class="button button-secondary">New Ticket</a>
+                </div>
+            </header>
+
+            <section class="dashboard-grid">
+                <div class="stat-card">
+                    <span>Total Requests</span>
+                    <strong>{{ tickets|length }}</strong>
+                </div>
+                <div class="stat-card">
+                    <span>Open</span>
+                    <strong>{{ stats.get('Open', 0) }}</strong>
+                </div>
+                <div class="stat-card">
+                    <span>In Progress</span>
+                    <strong>{{ stats.get('In Progress', 0) }}</strong>
+                </div>
+                <div class="stat-card">
+                    <span>Resolved</span>
+                    <strong>{{ stats.get('Resolved', 0) }}</strong>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="panel-header">
+                    <h2>Your Tickets</h2>
+                    <div class="filter-bar">
+                        <form method="get" class="filter-form">
+                            <select name="category">
+                                <option value="">Category</option>
+                                {% for category in categories %}
+                                    <option value="{{ category }}" {% if filters.category == category %}selected{% endif %}>{{ category }}</option>
+                                {% endfor %}
+                            </select>
+                            <select name="status">
+                                <option value="">Status</option>
+                                {% for status in status_options %}
+                                    <option value="{{ status }}" {% if filters.status == status %}selected{% endif %}>{{ status }}</option>
+                                {% endfor %}
+                            </select>
+                            <select name="priority">
+                                <option value="">Priority</option>
+                                {% for option in priorities %}
+                                    <option value="{{ option }}" {% if filters.priority == option %}selected{% endif %}>{{ option }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="button button-tertiary">Filter</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ticket in tickets %}
+                                <tr>
+                                    <td>#{{ ticket['id'] }}</td>
+                                    <td>{{ ticket['title'] }}</td>
+                                    <td>{{ ticket['category'] }}</td>
+                                    <td>{{ ticket['priority'] }}</td>
+                                    <td><span class="status-badge status-{{ ticket['status']|replace(' ', '-') }}">{{ ticket['status'] }}</span></td>
+                                    <td><a href="{{ url_for('ticket_details', ticket_id=ticket['id']) }}" class="button button-small">View</a></td>
+                                </tr>
+                            {% else %}
+                                <tr><td colspan="6" class="empty-row">No tickets found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

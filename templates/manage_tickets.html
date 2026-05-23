@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Tickets</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="layout-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <h2>IT Ticket</h2>
+                <span>IT Support</span>
+            </div>
+            <nav>
+                <a href="{{ url_for('it_dashboard') }}">Overview</a>
+                <a href="{{ url_for('manage_tickets') }}" class="active">Manage Tickets</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </nav>
+        </aside>
+        <main class="content">
+            <header class="page-header">
+                <div>
+                    <h1>All Tickets</h1>
+                    <p>Review, assign, and update tickets across the organization.</p>
+                </div>
+            </header>
+
+            <section class="panel">
+                <div class="panel-header">
+                    <h2>Advanced filters</h2>
+                </div>
+                <form method="get" class="filter-form">
+                    <select name="category">
+                        <option value="">Category</option>
+                        {% for category in categories %}
+                            <option value="{{ category }}" {% if filters.category == category %}selected{% endif %}>{{ category }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="status">
+                        <option value="">Status</option>
+                        {% for status in status_options %}
+                            <option value="{{ status }}" {% if filters.status == status %}selected{% endif %}>{{ status }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="priority">
+                        <option value="">Priority</option>
+                        {% for option in priorities %}
+                            <option value="{{ option }}" {% if filters.priority == option %}selected{% endif %}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="severity">
+                        <option value="">Severity</option>
+                        {% for option in severities %}
+                            <option value="{{ option }}" {% if filters.severity == option %}selected{% endif %}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="button button-tertiary">Apply</button>
+                </form>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Issue</th>
+                                <th>Employee</th>
+                                <th>Category</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ticket in tickets %}
+                                <tr>
+                                    <td>#{{ ticket['id'] }}</td>
+                                    <td>{{ ticket['title'] }}</td>
+                                    <td>{{ ticket['employee_name'] }}</td>
+                                    <td>{{ ticket['category'] }}</td>
+                                    <td>{{ ticket['priority'] }}</td>
+                                    <td><span class="status-badge status-{{ ticket['status']|replace(' ', '-') }}">{{ ticket['status'] }}</span></td>
+                                    <td><a href="{{ url_for('it_ticket_detail', ticket_id=ticket['id']) }}" class="button button-small">Open</a></td>
+                                </tr>
+                            {% else %}
+                                <tr><td colspan="7" class="empty-row">No tickets match the selected filters.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

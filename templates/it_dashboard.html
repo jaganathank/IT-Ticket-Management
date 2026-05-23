@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Support Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="layout-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <h2>IT Ticket</h2>
+                <span>IT Support</span>
+            </div>
+            <nav>
+                <a href="{{ url_for('it_dashboard') }}" class="active">Overview</a>
+                <a href="{{ url_for('manage_tickets') }}">Manage Tickets</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </nav>
+        </aside>
+        <main class="content">
+            <header class="page-header">
+                <div>
+                    <h1>System Dashboard</h1>
+                    <p>Monitor performance, open tickets, and priority workloads.</p>
+                </div>
+            </header>
+
+            <section class="dashboard-grid">
+                <div class="stat-card">
+                    <span>Total Tickets</span>
+                    <strong>{{ total }}</strong>
+                </div>
+                <div class="stat-card">
+                    <span>Open Tickets</span>
+                    <strong>{{ open_count }}</strong>
+                </div>
+                <div class="stat-card">
+                    <span>Critical Issues</span>
+                    <strong>{{ critical_count }}</strong>
+                </div>
+                <div class="stat-card">
+                    <span>Overdue</span>
+                    <strong>{{ overdue_count }}</strong>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="panel-header">
+                    <h2>Category distribution</h2>
+                </div>
+                <div class="chart-grid">
+                    {% for category in categories %}
+                        <div class="chart-card">
+                            <span>{{ category }}</span>
+                            <div class="chart-bar-wrap">
+                                <div class="chart-bar" style="width: {{ ((metrics['category'].get(category, 0) / (total or 1) * 100)|round(0)) }}%"></div>
+                            </div>
+                            <strong>{{ metrics['category'].get(category, 0) }}</strong>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
