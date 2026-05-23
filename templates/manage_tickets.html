@@ -25,6 +25,16 @@
                     <h1>All Tickets</h1>
                     <p>Review, assign, and update tickets across the organization.</p>
                 </div>
+                <div class="header-action">
+                    <details class="user-profile">
+                        <summary>{{ user['fullname'] }}</summary>
+                        <div class="user-profile-panel">
+                            <div class="profile-info"><span>ID</span><strong>#{{ user['id'] }}</strong></div>
+                            <div class="profile-info"><span>Username</span><strong>{{ user['username'] }}</strong></div>
+                            <div class="profile-info"><span>Name</span><strong>{{ user['fullname'] }}</strong></div>
+                        </div>
+                    </details>
+                </div>
             </header>
 
             <section class="panel">

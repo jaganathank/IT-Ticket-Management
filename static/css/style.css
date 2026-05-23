@@ -391,6 +391,57 @@ tbody td {
     align-items: center;
 }
 
+    .user-profile {
+        position: relative;
+        display: inline-block;
+        margin-left: 16px;
+    }
+
+    .user-profile summary {
+        list-style: none;
+        cursor: pointer;
+        border-radius: 14px;
+        border: 1px solid #d8e1eb;
+        background: #ffffff;
+        padding: 10px 14px;
+        color: #2d3b48;
+        font-weight: 700;
+    }
+
+    .user-profile summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .user-profile[open] summary {
+        background: #f4f8ff;
+    }
+
+    .user-profile-panel {
+        position: absolute;
+        right: 0;
+        top: 48px;
+        width: 220px;
+        border-radius: 16px;
+        border: 1px solid #d8e1eb;
+        background: #ffffff;
+        box-shadow: 0 18px 40px rgba(24, 39, 63, 0.08);
+        padding: 14px;
+        z-index: 20;
+    }
+
+    .profile-info {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 0 0 10px;
+        color: #475166;
+        font-size: 0.95rem;
+    }
+
+    .profile-info span {
+        color: #7a8a9f;
+    }
+
 @media (max-width: 900px) {
     .layout-shell { flex-direction: column; }
     .sidebar { width: 100%; }
