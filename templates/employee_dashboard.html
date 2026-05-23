@@ -28,9 +28,11 @@
                 <div class="header-action">
                     <a href="{{ url_for('raise_ticket') }}" class="button button-secondary">New Ticket</a>
                     <details class="user-profile">
-                        <summary>{{ user['fullname'] }}</summary>
+                        <summary aria-label="User profile">
+                            <span class="profile-avatar" data-initials="{{ user['fullname'][0]|upper }}"></span>
+                            <span class="visually-hidden">Profile</span>
+                        </summary>
                         <div class="user-profile-panel">
-                            <div class="profile-info"><span>ID</span><strong>#{{ user['id'] }}</strong></div>
                             <div class="profile-info"><span>Username</span><strong>{{ user['username'] }}</strong></div>
                             <div class="profile-info"><span>Name</span><strong>{{ user['fullname'] }}</strong></div>
                         </div>

@@ -26,10 +26,14 @@
                 <label>Username</label>
                 <input type="text" name="username" required placeholder="Enter your username">
                 <label>Password</label>
-                <input type="password" name="password" required placeholder="Enter your password">
+                <div class="password-wrapper">
+                    <input id="passwordInput" type="password" name="password" required placeholder="Enter your password">
+                    <button type="button" class="toggle-password" data-target="passwordInput">👁</button>
+                </div>
                 <button type="submit" class="button button-primary">Login</button>
                 <p class="muted">Employee demo: employee1 / password1<br>IT demo: it1 / passwordit</p>
             </form>
+            <script src="{{ url_for('static', filename='js/script.js') }}"></script>
         </div>
     </div>
 </body>
