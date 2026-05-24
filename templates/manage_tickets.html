@@ -10,8 +10,13 @@
     <div class="layout-shell">
         <aside class="sidebar">
             <div class="brand">
-                <h2>Service Portal</h2>
-                <span>Enterprise Support</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                    <div>
+                        <h2>Service Portal</h2>
+                        <span>Enterprise Support</span>
+                    </div>
+                    <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode">🌙</button>
+                </div>
             </div>
             <nav>
                 <a href="{{ url_for('it_dashboard') }}">Dashboard</a>
@@ -130,5 +135,6 @@
             </section>
         </main>
     </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

@@ -8,6 +8,26 @@
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8faff;
+    --bg-tertiary: #eef4ff;
+    --text-primary: #152033;
+    --text-secondary: #5f6f88;
+    --border-color: #d9e3f5;
+    --panel-bg: #ffffff;
+    --sidebar-bg: linear-gradient(180deg, #0b4de6 0%, #0a2d61 100%);
+}
+
+html[data-theme="dark"] {
+    color-scheme: dark;
+    --bg-primary: #0f1f41;
+    --bg-secondary: #1a2e5c;
+    --bg-tertiary: #253b6d;
+    --text-primary: #e8f0ff;
+    --text-secondary: #a8bce0;
+    --border-color: #2a3d5a;
+    --panel-bg: #1a2e5c;
+    --sidebar-bg: linear-gradient(180deg, #0d2847 0%, #081a2f 100%);
 }
 
 html {
@@ -19,6 +39,11 @@ body {
     min-height: 100vh;
     background: radial-gradient(circle at top, rgba(10,97,255,0.12), transparent 28%), linear-gradient(180deg, #eef4ff 0%, #ffffff 60%, #f7f9ff 100%);
     color: #152033;
+}
+
+html[data-theme="dark"] body {
+    background: linear-gradient(180deg, #0f1f41 0%, #1a2e5c 50%, #0f1f41 100%);
+    color: #e8f0ff;
 }
 
 img,
@@ -1095,6 +1120,214 @@ tbody tr:hover {
         white-space: nowrap;
         border: 0;
     }
+
+/* Theme Toggle Button */
+.theme-toggle {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    padding: 8px 10px;
+    color: #ffffff;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+/* Dark Theme Styles */
+html[data-theme="dark"] .sidebar {
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+}
+
+html[data-theme="dark"] .sidebar .brand {
+    border-bottom: 1px solid var(--border-color);
+}
+
+html[data-theme="dark"] .sidebar nav a {
+    color: #a8bce0;
+}
+
+html[data-theme="dark"] .sidebar nav a:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e8f0ff;
+}
+
+html[data-theme="dark"] .sidebar nav a.active {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+html[data-theme="dark"] .content {
+    background: var(--bg-primary);
+}
+
+html[data-theme="dark"] .header-top h1 {
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"] .header-top p {
+    color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+}
+
+html[data-theme="dark"] .panel h2 {
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"] .panel p {
+    color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .stat-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+}
+
+html[data-theme="dark"] .stat-card span {
+    color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .stat-card strong {
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"] input,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+    color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .search-bar input {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"] table {
+    background: transparent;
+}
+
+html[data-theme="dark"] thead th {
+    background: var(--panel-bg);
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+html[data-theme="dark"] tbody td {
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+html[data-theme="dark"] .hero-panel {
+    background: linear-gradient(135deg, #1a3a7a 0%, #0d2456 100%);
+    color: #e8f0ff;
+}
+
+html[data-theme="dark"] .form-grid label {
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"] .form-grid input,
+html[data-theme="dark"] .form-grid select,
+html[data-theme="dark"] .form-grid textarea {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"] .priority-options label {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"] .priority-options input:checked + label {
+    background: rgba(47, 109, 255, 0.2);
+    border-color: #2f6dff;
+}
+
+html[data-theme="dark"] .notification-pill,
+html[data-theme="dark"] .avatar-pill {
+    background: var(--panel-bg);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"] .button-secondary {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"] .button-secondary:hover {
+    background: var(--bg-secondary);
+}
+
+html[data-theme="dark"] .button-tertiary {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .button-tertiary:hover {
+    background: var(--bg-tertiary);
+}
+
+html[data-theme="dark"] .info-grid {
+    background: transparent;
+}
+
+html[data-theme="dark"] .info-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"] .ticket-detail-row {
+    border-bottom: 1px solid var(--border-color);
+}
+
+html[data-theme="dark"] .status-badge {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"] .auth-container {
+    gap: 30px;
+}
+
+html[data-theme="dark"] .auth-panel {
+    background: var(--panel-bg);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"] .auth-form label {
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"] .filter-form select {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
 
 @media (max-width: 900px) {
     .layout-shell { flex-direction: column; }
