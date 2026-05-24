@@ -31,7 +31,7 @@
                     <p>Monitoring ongoing service requests across enterprise systems.</p>
                 </div>
                 <div class="topbar-actions">
-                    <form method="get" class="search-form" style="display:flex; gap:12px; align-items:center; width:100%; max-width:520px;">
+                    <form method="get" class="search-form" style="display:flex; gap:12px; align-items:center; flex:1;">
                         <input type="hidden" name="category" value="{{ filters.category or '' }}">
                         <input type="hidden" name="status" value="{{ filters.status or '' }}">
                         <input type="hidden" name="priority" value="{{ filters.priority or '' }}">
@@ -42,6 +42,22 @@
                         </div>
                         <button type="submit" class="button button-secondary">Search</button>
                     </form>
+                    <div class="user-row">
+                        <div class="profile-menu-wrapper">
+                            <button class="avatar-pill profile-toggle" title="View profile">{{ user['fullname'][0]|upper }}</button>
+                            <div class="profile-dropdown">
+                                <div class="profile-header">
+                                    <div class="profile-avatar">{{ user['fullname'][0]|upper }}</div>
+                                </div>
+                                <div class="profile-info">
+                                    <p class="profile-name">{{ user['fullname'] }}</p>
+                                    <p class="profile-id">ID: {{ user['username'] }}</p>
+                                </div>
+                                <div class="profile-divider"></div>
+                                <a href="{{ url_for('logout') }}" class="profile-logout">Logout</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

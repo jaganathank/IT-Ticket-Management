@@ -114,9 +114,13 @@ def fetch_tickets_for_employee(employee_id, filters=None):
         query += ' AND severity = ?'
         params.append(filters['severity'])
     if filters.get('search'):
-        search_term = f"%{filters['search']}%"
-        query += ' AND (title LIKE ? OR description LIKE ? OR category LIKE ? OR priority LIKE ? OR status LIKE ?)'
-        params.extend([search_term] * 5)
+        search_term = filters['search'].strip()
+        # Remove "#" prefix if present for ID search
+        if search_term.startswith('#'):
+            search_term = search_term[1:]
+        search_pattern = f"%{search_term}%"
+        query += ' AND (CAST(id AS TEXT) LIKE ? OR title LIKE ? OR description LIKE ? OR category LIKE ? OR priority LIKE ? OR status LIKE ?)'
+        params.extend([search_pattern] * 6)
 
     return query_db(query + ' ORDER BY created_at DESC', tuple(params))
 
@@ -142,9 +146,13 @@ def fetch_all_tickets(filters=None):
         query += ' AND assigned_to = ?'
         params.append(filters['assigned_to'])
     if filters.get('search'):
-        search_term = f"%{filters['search']}%"
+        search_term = filters['search'].strip()
+        # Remove "#" prefix if present for ID search
+        if search_term.startswith('#'):
+            search_term = search_term[1:]
+        search_pattern = f"%{search_term}%"
         query += ' AND (CAST(t.id AS TEXT) LIKE ? OR t.title LIKE ? OR u.fullname LIKE ? OR t.category LIKE ? OR t.priority LIKE ? OR t.status LIKE ?)'
-        params.extend([search_term] * 6)
+        params.extend([search_pattern] * 6)
 
     return query_db(query + ' ORDER BY updated_at DESC', tuple(params))
 
@@ -256,3 +264,62 @@ def dashboard_metrics():
         'priority': {row['priority']: row['count'] for row in priorities},
         'critical': critical['count'] if critical else 0
     }
+
+
+def create_notification(user_id, ticket_id, message, notification_type='status_update'):
+    """Create a notification for a user about a ticket update"""
+    timestamp = datetime.utcnow().isoformat()
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    # Check if notifications table exists
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='notifications'")
+    if not cursor.fetchone():
+        # Create notifications table if it doesn't exist
+        conn.execute('''CREATE TABLE IF NOT EXISTS notifications (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            ticket_id INTEGER NOT NULL,
+            message TEXT NOT NULL,
+            notification_type TEXT DEFAULT 'status_update',
+            is_read INTEGER DEFAULT 0,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY(user_id) REFERENCES users(id),
+            FOREIGN KEY(ticket_id) REFERENCES tickets(id)
+        )''')
+    
+    cursor.execute(
+        'INSERT INTO notifications (user_id, ticket_id, message, notification_type, created_at) VALUES (?, ?, ?, ?, ?)',
+        (user_id, ticket_id, message, notification_type, timestamp)
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_notifications(user_id, unread_only=False):
+    """Retrieve notifications for a user"""
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    # Check if notifications table exists
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='notifications'")
+    if not cursor.fetchone():
+        return []
+    
+    conn.close()
+    
+    query = 'SELECT * FROM notifications WHERE user_id = ?'
+    params = [user_id]
+    
+    if unread_only:
+        query += ' AND is_read = 0'
+    
+    return query_db(query + ' ORDER BY created_at DESC LIMIT 10', tuple(params))
+
+
+def mark_notification_read(notification_id):
+    """Mark a notification as read"""
+    conn = get_connection()
+    conn.execute('UPDATE notifications SET is_read = 1 WHERE id = ?', (notification_id,))
+    conn.commit()
+    conn.close()

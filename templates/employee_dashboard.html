@@ -31,10 +31,31 @@
                     <p>Here is a quick overview of your current support status.</p>
                 </div>
                 <div class="topbar-actions">
-                    <a href="{{ url_for('raise_ticket') }}" class="button button-primary">Create Ticket</a>
                     <div class="user-row">
-                        <div class="notification-pill">🔔</div>
-                        <div class="avatar-pill">{{ user['fullname'][0]|upper }}</div>
+                        <a href="{{ url_for('raise_ticket') }}" class="button button-primary">Create Ticket</a>
+                        <div class="notification-menu-wrapper">
+                            <button class="notification-pill notification-toggle" id="notification-btn" title="View notifications">🔔</button>
+                            <div class="notification-dropdown">
+                                <div class="notification-header">Notifications</div>
+                                <div class="notification-list" id="notification-list">
+                                    <div class="notification-empty">No notifications</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="profile-menu-wrapper">
+                            <button class="avatar-pill profile-toggle" title="View profile">{{ user['fullname'][0]|upper }}</button>
+                            <div class="profile-dropdown">
+                                <div class="profile-header">
+                                    <div class="profile-avatar">{{ user['fullname'][0]|upper }}</div>
+                                </div>
+                                <div class="profile-info">
+                                    <p class="profile-name">{{ user['fullname'] }}</p>
+                                    <p class="profile-id">ID: {{ user['username'] }}</p>
+                                </div>
+                                <div class="profile-divider"></div>
+                                <a href="{{ url_for('logout') }}" class="profile-logout">Logout</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

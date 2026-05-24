@@ -19,6 +19,8 @@ from database.models import (
     add_resolution_notes,
     ticket_stats_for_employee,
     dashboard_metrics,
+    create_notification,
+    get_notifications,
 )
 
 app = Flask(__name__)
@@ -264,6 +266,13 @@ def it_ticket_detail(ticket_id):
         elif action == 'status':
             status_value = request.form.get('status')
             update_ticket_status(ticket_id, status_value, g.user['id'])
+            # Create notification for the employee
+            create_notification(
+                ticket['employee_id'],
+                ticket_id,
+                f"Ticket #{ticket_id} status updated to {status_value}",
+                'status_update'
+            )
             flash('Ticket status updated.', 'success')
         elif action == 'resolution':
             notes = request.form.get('resolution_notes').strip()
@@ -297,3 +306,23 @@ def it_ticket_detail(ticket_id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+@app.route('/api/notifications')
+@login_required()
+def api_notifications():
+    """API endpoint to fetch notifications for the logged-in user"""
+    notifications = get_notifications(g.user['id'])
+    return {
+        'notifications': [
+            {
+                'id': n['id'],
+                'message': n['message'],
+                'ticket_id': n['ticket_id'],
+                'type': n['notification_type'],
+                'is_read': n['is_read'],
+                'created_at': n['created_at']
+            }
+            for n in notifications
+        ]
+    }
