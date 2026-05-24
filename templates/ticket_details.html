@@ -3,47 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticket #{{ ticket['id'] }}</title>
+    <title>ServiceFlow IT | Ticket #{{ ticket['id'] }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="layout-shell">
         <aside class="sidebar">
             <div class="brand">
-                <h2>IT Ticket</h2>
-                <span>{{ 'IT' if user['role'] == 'it' else 'Employee' }} Portal</span>
+                <h2>Service Portal</h2>
+                <span>Enterprise Support</span>
             </div>
             <nav>
                 {% if user['role'] == 'employee' %}
                     <a href="{{ url_for('employee_dashboard') }}">Dashboard</a>
-                    <a href="{{ url_for('raise_ticket') }}">Raise Ticket</a>
+                    <a href="{{ url_for('raise_ticket') }}">Create Ticket</a>
                 {% else %}
-                    <a href="{{ url_for('it_dashboard') }}">Overview</a>
-                    <a href="{{ url_for('manage_tickets') }}">Manage Tickets</a>
+                    <a href="{{ url_for('it_dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('manage_tickets') }}">View Tickets</a>
                 {% endif %}
                 <a href="{{ url_for('logout') }}">Logout</a>
             </nav>
         </aside>
         <main class="content">
-            <header class="page-header">
-                <div>
+            <div class="header-top">
+                <div class="topbar-left">
                     <h1>Ticket #{{ ticket['id'] }}</h1>
                     <p>{{ ticket['title'] }}</p>
                 </div>
-                <div class="header-action">
+                <div class="topbar-actions">
                     <span class="status-badge status-{{ ticket['status']|replace(' ', '-') }}">{{ ticket['status'] }}</span>
-                    <details class="user-profile">
-                        <summary aria-label="User profile">
-                            <span class="profile-avatar" data-initials="{{ user['fullname'][0]|upper }}"></span>
-                            <span class="visually-hidden">Profile</span>
-                        </summary>
-                        <div class="user-profile-panel">
-                            <div class="profile-info"><span>Username</span><strong>{{ user['username'] }}</strong></div>
-                            <div class="profile-info"><span>Name</span><strong>{{ user['fullname'] }}</strong></div>
-                        </div>
-                    </details>
+                    <div class="avatar-pill">{{ user['fullname'][0]|upper }}</div>
                 </div>
-            </header>
+            </div>
 
             <section class="panel ticket-detail-panel">
                 <div class="detail-grid">
@@ -64,10 +55,12 @@
                         <p>{{ assignee['fullname'] if assignee else 'Not assigned' }}</p>
                     </div>
                 </div>
+
                 <div class="ticket-description">
                     <h3>Description</h3>
                     <p>{{ ticket['description'] }}</p>
                 </div>
+
                 {% if user['role'] == 'it' %}
                     <div class="ticket-actions">
                         <form method="post" class="action-panel">
@@ -84,7 +77,7 @@
 
                         <form method="post" class="action-panel">
                             <input type="hidden" name="action" value="status">
-                            <label>Update ticket status</label>
+                            <label>Ticket status</label>
                             <select name="status">
                                 {% for status in status_options %}
                                     <option value="{{ status }}" {% if ticket['status'] == status %}selected{% endif %}>{{ status }}</option>
@@ -101,17 +94,18 @@
                         </form>
                     </div>
                 {% endif %}
+
                 <div class="ticket-activity">
                     <div>
                         <h3>Activity timeline</h3>
                         <div class="activity-list">
                             {% for activity in activities %}
                                 <div class="activity-item">
-                                    <div>
-                                        <strong>{{ activity['description'] }}</strong>
-                                        <span>{{ activity['fullname'] }} • {{ activity['created_at'][:19].replace('T',' ') }}</span>
-                                    </div>
+                                    <strong>{{ activity['description'] }}</strong>
+                                    <span>{{ activity['fullname'] }} • {{ activity['created_at'][:19].replace('T',' ') }}</span>
                                 </div>
+                            {% else %}
+                                <p class="muted">No activity recorded yet.</p>
                             {% endfor %}
                         </div>
                     </div>

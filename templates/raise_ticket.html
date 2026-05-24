@@ -3,43 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raise Ticket</title>
+    <title>ServiceFlow IT | Create Support Ticket</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="layout-shell">
         <aside class="sidebar">
             <div class="brand">
-                <h2>IT Ticket</h2>
-                <span>Employee Portal</span>
+                <h2>Service Portal</h2>
+                <span>Enterprise Support</span>
             </div>
             <nav>
                 <a href="{{ url_for('employee_dashboard') }}">Dashboard</a>
-                <a href="{{ url_for('raise_ticket') }}" class="active">Raise Ticket</a>
+                <a href="{{ url_for('raise_ticket') }}" class="active">Create Ticket</a>
                 <a href="{{ url_for('logout') }}">Logout</a>
             </nav>
         </aside>
         <main class="content">
-            <header class="page-header">
-                <div>
-                    <h1>Raise a new support ticket</h1>
-                    <p>Describe your issue clearly so IT support can respond faster.</p>
+            <div class="header-top">
+                <div class="topbar-left">
+                    <h1>Create Support Ticket</h1>
+                    <p>Provide details about the issue you are experiencing. Our technical team will review it shortly.</p>
                 </div>
-                <div class="header-action">
-                    <details class="user-profile">
-                        <summary aria-label="User profile">
-                            <span class="profile-avatar" data-initials="{{ user['fullname'][0]|upper }}"></span>
-                            <span class="visually-hidden">Profile</span>
-                        </summary>
-                        <div class="user-profile-panel">
-                            <div class="profile-info"><span>Username</span><strong>{{ user['username'] }}</strong></div>
-                            <div class="profile-info"><span>Name</span><strong>{{ user['fullname'] }}</strong></div>
-                        </div>
-                    </details>
+                <div class="topbar-actions">
+                    <div class="avatar-pill">{{ user['fullname'][0]|upper }}</div>
                 </div>
-            </header>
+            </div>
 
             <section class="panel">
+                <div class="hero-panel">
+                    <div style="display:flex; justify-content:space-between; gap:18px; flex-wrap:wrap;">
+                        <div>
+                            <h2>New Request Details</h2>
+                            <p>Draft saved automatically while you complete the ticket.</p>
+                        </div>
+                        <span style="font-weight:700; color:rgba(255,255,255,0.95);">Draft Auto-saved</span>
+                    </div>
+                </div>
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         <div class="alerts">
@@ -50,38 +50,58 @@
                     {% endif %}
                 {% endwith %}
                 <form method="post" class="form-grid">
-                    <label>Issue Title</label>
-                    <input type="text" name="title" required placeholder="Enter a short summary">
-
-                    <label>Category</label>
-                    <select name="category" required>
-                        {% for category in categories %}
-                            <option value="{{ category }}">{{ category }}</option>
-                        {% endfor %}
-                    </select>
-
-                    <label>Priority</label>
-                    <select name="priority" required>
-                        {% for option in priorities %}
-                            <option value="{{ option }}">{{ option }}</option>
-                        {% endfor %}
-                    </select>
-
-                    <label>Severity</label>
-                    <select name="severity" required>
-                        {% for option in severities %}
-                            <option value="{{ option }}">{{ option }}</option>
-                        {% endfor %}
-                    </select>
-
-                    <label>Description</label>
-                    <textarea name="description" rows="6" required placeholder="Provide as much detail as possible."></textarea>
-
-                    <div class="form-controls">
+                    <div class="full-width">
+                        <label>Employee Name</label>
+                        <input type="text" value="{{ user['fullname'] }}" readonly>
+                    </div>
+                    <div>
+                        <label>Employee ID</label>
+                        <input type="text" value="{{ user['username'] }}" readonly>
+                    </div>
+                    <div>
+                        <label>Category</label>
+                        <select name="category" required>
+                            {% for category in categories %}
+                                <option value="{{ category }}">{{ category }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="full-width">
+                        <label>Subject</label>
+                        <input type="text" name="title" required placeholder="Brief summary of the issue">
+                    </div>
+                    <div class="full-width">
+                        <label>Description</label>
+                        <textarea name="description" required placeholder="Please provide as much detail as possible, including steps taken or error messages..."></textarea>
+                    </div>
+                    <div class="full-width">
+                        <label>Priority Level</label>
+                        <div class="priority-options">
+                            {% for option in priorities %}
+                                <input type="radio" id="priority-{{ option }}" name="priority" value="{{ option }}" {% if option == 'Medium' %}checked{% endif %}>
+                                <label for="priority-{{ option }}"><span>{{ option }}</span></label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-controls full-width">
                         <a href="{{ url_for('employee_dashboard') }}" class="button button-tertiary">Cancel</a>
-                        <button type="submit" class="button button-primary">Submit Ticket</button>
+                        <button type="submit" class="button button-primary">Create Ticket →</button>
                     </div>
                 </form>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <span>Response Time</span>
+                        <strong>Medium priority tickets are typically addressed within 4-8 business hours.</strong>
+                    </div>
+                    <div class="info-card">
+                        <span>Provide Details</span>
+                        <strong>Specific details help our engineers reproduce the issue and resolve it faster.</strong>
+                    </div>
+                    <div class="info-card">
+                        <span>Security</span>
+                        <strong>Never share passwords or sensitive credentials in ticket descriptions.</strong>
+                    </div>
+                </div>
             </section>
         </main>
     </div>

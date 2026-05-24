@@ -3,41 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IT Support Dashboard</title>
+    <title>ServiceFlow IT | Admin Overview</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="layout-shell">
         <aside class="sidebar">
             <div class="brand">
-                <h2>IT Ticket</h2>
-                <span>IT Support</span>
+                <h2>Service Portal</h2>
+                <span>Enterprise Support</span>
             </div>
             <nav>
-                <a href="{{ url_for('it_dashboard') }}" class="active">Overview</a>
-                <a href="{{ url_for('manage_tickets') }}">Manage Tickets</a>
+                <a href="{{ url_for('it_dashboard') }}" class="active">Dashboard</a>
+                <a href="{{ url_for('manage_tickets') }}">View Tickets</a>
                 <a href="{{ url_for('logout') }}">Logout</a>
             </nav>
         </aside>
         <main class="content">
-            <header class="page-header">
-                <div>
-                    <h1>System Dashboard</h1>
-                    <p>Monitor performance, open tickets, and priority workloads.</p>
+            <div class="header-top">
+                <div class="topbar-left">
+                    <h1>Admin Overview</h1>
+                    <p>Real-time status of enterprise support operations.</p>
                 </div>
-                <div class="header-action">
-                    <details class="user-profile">
-                        <summary aria-label="User profile">
-                            <span class="profile-avatar" data-initials="{{ user['fullname'][0]|upper }}"></span>
-                            <span class="visually-hidden">Profile</span>
-                        </summary>
-                        <div class="user-profile-panel">
-                            <div class="profile-info"><span>Username</span><strong>{{ user['username'] }}</strong></div>
-                            <div class="profile-info"><span>Name</span><strong>{{ user['fullname'] }}</strong></div>
+                <div class="topbar-actions" style="align-items:center; gap:16px;">
+                    <form method="get" class="search-form" style="display:flex; gap:10px; align-items:center;">
+                        <div class="search-bar" style="flex:1;">
+                            <input type="text" name="search" placeholder="Search tickets, requests, or users..." value="{{ request.args.get('search', '') }}">
                         </div>
-                    </details>
+                        <button type="submit" class="button button-secondary">Search</button>
+                    </form>
+                    <div class="notification-pill">🔔</div>
+                    <div class="avatar-pill">{{ user['fullname'][0]|upper }}</div>
                 </div>
-            </header>
+            </div>
 
             <section class="dashboard-grid">
                 <div class="stat-card">
@@ -49,7 +47,7 @@
                     <strong>{{ open_count }}</strong>
                 </div>
                 <div class="stat-card">
-                    <span>Critical Issues</span>
+                    <span>Critical</span>
                     <strong>{{ critical_count }}</strong>
                 </div>
                 <div class="stat-card">
@@ -61,14 +59,12 @@
             <section class="panel">
                 <div class="panel-header">
                     <h2>Category distribution</h2>
+                    <p>An overview of ticket volume by category.</p>
                 </div>
-                <div class="chart-grid">
+                <div class="info-grid">
                     {% for category in categories %}
                         <div class="chart-card">
                             <span>{{ category }}</span>
-                            <div class="chart-bar-wrap">
-                                <div class="chart-bar" style="width: {{ ((metrics['category'].get(category, 0) / (total or 1) * 100)|round(0)) }}%"></div>
-                            </div>
                             <strong>{{ metrics['category'].get(category, 0) }}</strong>
                         </div>
                     {% endfor %}

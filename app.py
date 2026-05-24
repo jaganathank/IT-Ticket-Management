@@ -5,6 +5,8 @@ from database.models import (
     init_db,
     get_user,
     get_user_by_id,
+    get_user_by_username,
+    create_user,
     create_ticket,
     fetch_tickets_for_employee,
     fetch_all_tickets,
@@ -71,6 +73,8 @@ def root():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if g.user:
+        return redirect(url_for(ROLE_ROUTES[g.user['role']]))
     if request.method == 'POST':
         username = request.form['username'].strip()
         password = request.form['password'].strip()
@@ -83,6 +87,27 @@ def login():
     return render_template('login.html')
 
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if g.user:
+        return redirect(url_for(ROLE_ROUTES[g.user['role']]))
+    if request.method == 'POST':
+        fullname = request.form['fullname'].strip()
+        username = request.form['username'].strip()
+        password = request.form['password'].strip()
+        email = request.form['email'].strip()
+        department = request.form['department'].strip()
+        if not fullname or not username or not password or not email:
+            flash('Please complete all required registration fields.', 'warning')
+        elif get_user_by_username(username):
+            flash('This Employee ID is already registered.', 'warning')
+        else:
+            create_user(fullname, username, password, 'employee', email, department)
+            flash('Account created successfully. Please sign in.', 'success')
+            return redirect(url_for('login'))
+    return render_template('register.html')
+
+
 @app.route('/logout')
 def logout():
     session.clear()
@@ -93,6 +118,7 @@ def logout():
 @login_required('employee')
 def employee_dashboard():
     filters = {
+        'search': request.args.get('search'),
         'category': request.args.get('category'),
         'status': request.args.get('status'),
         'priority': request.args.get('priority'),
@@ -193,6 +219,7 @@ def it_dashboard():
 @login_required('it')
 def manage_tickets():
     filters = {
+        'search': request.args.get('search'),
         'category': request.args.get('category'),
         'status': request.args.get('status'),
         'priority': request.args.get('priority'),
@@ -206,6 +233,7 @@ def manage_tickets():
         user=g.user,
         tickets=tickets,
         filters=filters,
+        search=filters['search'],
         categories=CATEGORIES,
         priorities=PRIORITIES,
         severities=SEVERITIES,

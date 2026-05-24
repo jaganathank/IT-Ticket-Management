@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ServiceFlow IT | Sign In</title>
+    <title>ServiceFlow IT | Create Account</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
@@ -12,10 +12,10 @@
             <section class="auth-panel">
                 <div class="auth-actions">
                     <div class="brand-label"><span>SF</span>ServiceFlow IT</div>
-                    <a href="{{ url_for('register') }}" class="button button-tertiary">Create account</a>
+                    <a href="{{ url_for('login') }}" class="button button-tertiary">Sign In</a>
                 </div>
-                <h1>Sign In</h1>
-                <p>Enter your credentials to access your enterprise support dashboard.</p>
+                <h1>Create Account</h1>
+                <p>Join the enterprise support network to manage your requests.</p>
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         <div class="alerts">
@@ -26,19 +26,30 @@
                     {% endif %}
                 {% endwith %}
                 <form method="post" class="auth-form">
-                    <label>Employee ID or Email</label>
-                    <input type="text" name="username" required placeholder="e.g. SF-10293 or name@serviceflow.it">
+                    <label>Full Name</label>
+                    <input type="text" name="fullname" required placeholder="John Doe">
+                    <label>Employee ID</label>
+                    <input type="text" name="username" required placeholder="SF-12345">
+                    <label>Company Email</label>
+                    <input type="email" name="email" required placeholder="j.doe@company.com">
+                    <label>Department</label>
+                    <select name="department" required>
+                        <option value="">Select Department</option>
+                        <option>Human Resources</option>
+                        <option>Finance</option>
+                        <option>Engineering</option>
+                        <option>Sales</option>
+                        <option>Marketing</option>
+                        <option>Operations</option>
+                        <option>Other</option>
+                    </select>
                     <label>Password</label>
                     <div class="password-wrapper">
-                        <input id="passwordInput" type="password" name="password" required placeholder="Enter your password">
-                        <button type="button" class="toggle-password" data-target="passwordInput">👁</button>
+                        <input id="registerPassword" type="password" name="password" required placeholder="Min. 8 characters">
+                        <button type="button" class="toggle-password" data-target="registerPassword">👁</button>
                     </div>
-                    <div class="auth-actions" style="justify-content: space-between; gap: 12px;">
-                        <a href="#" class="muted">Forgot Password?</a>
-                        <button type="submit" class="button button-primary">Sign In →</button>
-                    </div>
-                    <p class="muted">Employee demo: employee1 / password1<br>IT demo: it1 / passwordit</p>
-                    <p class="muted" style="margin-top: 8px;">New to the platform? <a href="{{ url_for('register') }}">Create account</a></p>
+                    <button type="submit" class="button button-primary">Create Account</button>
+                    <p class="muted">Already have an account? <a href="{{ url_for('login') }}">Log in here</a></p>
                 </form>
             </section>
             <section class="auth-promo">

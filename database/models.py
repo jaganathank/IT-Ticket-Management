@@ -13,6 +13,11 @@ def get_connection():
     return conn
 
 
+def table_has_column(connection, table_name, column_name):
+    cursor = connection.execute(f"PRAGMA table_info({table_name})")
+    return any(row[1] == column_name for row in cursor.fetchall())
+
+
 def init_db():
     if not os.path.exists(DB_PATH):
         connection = get_connection()
@@ -28,6 +33,12 @@ def init_db():
     if cursor.fetchone() is None:
         with open(SQL_PATH, 'r', encoding='utf-8') as sql_file:
             connection.executescript(sql_file.read())
+        connection.commit()
+    else:
+        if not table_has_column(connection, 'users', 'email'):
+            connection.execute('ALTER TABLE users ADD COLUMN email TEXT')
+        if not table_has_column(connection, 'users', 'department'):
+            connection.execute('ALTER TABLE users ADD COLUMN department TEXT')
         connection.commit()
     connection.close()
 
@@ -50,6 +61,24 @@ def get_user(username, password):
 
 def get_user_by_id(user_id):
     return query_db('SELECT * FROM users WHERE id = ?', (user_id,), one=True)
+
+
+def get_user_by_username(username):
+    return query_db('SELECT * FROM users WHERE username = ?', (username,), one=True)
+
+
+def create_user(fullname, username, password, role='employee', email=None, department=None):
+    timestamp = datetime.utcnow().isoformat()
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        'INSERT INTO users (fullname, username, password, role, email, department) VALUES (?, ?, ?, ?, ?, ?)',
+        (fullname, username, password, role, email, department)
+    )
+    user_id = cursor.lastrowid
+    conn.commit()
+    conn.close()
+    return user_id
 
 
 def create_ticket(title, category, priority, severity, description, employee_id):
@@ -84,6 +113,10 @@ def fetch_tickets_for_employee(employee_id, filters=None):
     if filters.get('severity'):
         query += ' AND severity = ?'
         params.append(filters['severity'])
+    if filters.get('search'):
+        search_term = f"%{filters['search']}%"
+        query += ' AND (title LIKE ? OR description LIKE ? OR category LIKE ? OR priority LIKE ? OR status LIKE ?)'
+        params.extend([search_term] * 5)
 
     return query_db(query + ' ORDER BY created_at DESC', tuple(params))
 
@@ -108,6 +141,10 @@ def fetch_all_tickets(filters=None):
     if filters.get('assigned_to'):
         query += ' AND assigned_to = ?'
         params.append(filters['assigned_to'])
+    if filters.get('search'):
+        search_term = f"%{filters['search']}%"
+        query += ' AND (CAST(t.id AS TEXT) LIKE ? OR t.title LIKE ? OR u.fullname LIKE ? OR t.category LIKE ? OR t.priority LIKE ? OR t.status LIKE ?)'
+        params.extend([search_term] * 6)
 
     return query_db(query + ' ORDER BY updated_at DESC', tuple(params))
 

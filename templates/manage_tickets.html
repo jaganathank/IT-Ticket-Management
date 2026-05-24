@@ -3,47 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Tickets</title>
+    <title>ServiceFlow IT | Tickets</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="layout-shell">
         <aside class="sidebar">
             <div class="brand">
-                <h2>IT Ticket</h2>
-                <span>IT Support</span>
+                <h2>Service Portal</h2>
+                <span>Enterprise Support</span>
             </div>
             <nav>
-                <a href="{{ url_for('it_dashboard') }}">Overview</a>
-                <a href="{{ url_for('manage_tickets') }}" class="active">Manage Tickets</a>
+                <a href="{{ url_for('it_dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('manage_tickets') }}" class="active">View Tickets</a>
                 <a href="{{ url_for('logout') }}">Logout</a>
             </nav>
         </aside>
         <main class="content">
-            <header class="page-header">
-                <div>
-                    <h1>All Tickets</h1>
-                    <p>Review, assign, and update tickets across the organization.</p>
+            <div class="header-top">
+                <div class="topbar-left">
+                    <h1>All Active Tickets</h1>
+                    <p>Monitoring ongoing service requests across enterprise systems.</p>
                 </div>
-                <div class="header-action">
-                    <details class="user-profile">
-                        <summary aria-label="User profile">
-                            <span class="profile-avatar" data-initials="{{ user['fullname'][0]|upper }}"></span>
-                            <span class="visually-hidden">Profile</span>
-                        </summary>
-                        <div class="user-profile-panel">
-                            <div class="profile-info"><span>Username</span><strong>{{ user['username'] }}</strong></div>
-                            <div class="profile-info"><span>Name</span><strong>{{ user['fullname'] }}</strong></div>
+                <div class="topbar-actions">
+                    <form method="get" class="search-form" style="display:flex; gap:12px; align-items:center; width:100%; max-width:520px;">
+                        <input type="hidden" name="category" value="{{ filters.category or '' }}">
+                        <input type="hidden" name="status" value="{{ filters.status or '' }}">
+                        <input type="hidden" name="priority" value="{{ filters.priority or '' }}">
+                        <input type="hidden" name="severity" value="{{ filters.severity or '' }}">
+                        <input type="hidden" name="assigned_to" value="{{ filters.assigned_to or '' }}">
+                        <div class="search-bar" style="flex:1;">
+                            <input type="text" name="search" placeholder="Search by ID, name, or category..." value="{{ search or '' }}">
                         </div>
-                    </details>
+                        <button type="submit" class="button button-secondary">Search</button>
+                    </form>
                 </div>
-            </header>
+            </div>
+
+            <section class="dashboard-grid">
+                <div class="stat-card">
+                    <span>Unassigned</span>
+                    <strong>{{ tickets|selectattr('assigned_to','equalto',None)|list|length }}</strong>
+                </div>
+                <div class="stat-card">
+                    <span>High Priority</span>
+                    <strong>{{ tickets|selectattr('priority','equalto','High')|list|length }}</strong>
+                </div>
+                <div class="stat-card">
+                    <span>In Progress</span>
+                    <strong>{{ tickets|selectattr('status','equalto','In Progress')|list|length }}</strong>
+                </div>
+                <div class="stat-card">
+                    <span>Avg Resolution</span>
+                    <strong>4.2h</strong>
+                </div>
+            </section>
 
             <section class="panel">
-                <div class="panel-header">
-                    <h2>Advanced filters</h2>
+                <div class="ticket-list-header">
+                    <div>
+                        <h2>All Active Tickets</h2>
+                        <p>Review tickets across departments and update priority as needed.</p>
+                    </div>
+                    <a href="{{ url_for('it_dashboard') }}" class="button button-secondary">Overview</a>
                 </div>
+
                 <form method="get" class="filter-form">
+                    <input type="hidden" name="search" value="{{ search or '' }}">
                     <select name="category">
                         <option value="">Category</option>
                         {% for category in categories %}
@@ -68,31 +94,32 @@
                             <option value="{{ option }}" {% if filters.severity == option %}selected{% endif %}>{{ option }}</option>
                         {% endfor %}
                     </select>
-                    <button type="submit" class="button button-tertiary">Apply</button>
+                    <button type="submit" class="button button-tertiary">Clear Filters</button>
                 </form>
+
                 <div class="table-wrapper">
                     <table>
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Issue</th>
-                                <th>Employee</th>
-                                <th>Category</th>
-                                <th>Priority</th>
-                                <th>Status</th>
-                                <th>Action</th>
+                                <th>TICKET ID</th>
+                                <th>REQUESTER</th>
+                                <th>CATEGORY</th>
+                                <th>PRIORITY</th>
+                                <th>STATUS</th>
+                                <th>DATE</th>
+                                <th>ACTIONS</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for ticket in tickets %}
                                 <tr>
                                     <td>#{{ ticket['id'] }}</td>
-                                    <td>{{ ticket['title'] }}</td>
                                     <td>{{ ticket['employee_name'] }}</td>
                                     <td>{{ ticket['category'] }}</td>
-                                    <td>{{ ticket['priority'] }}</td>
+                                    <td><span class="status-badge status-{{ ticket['priority']|replace(' ', '-') }}">{{ ticket['priority'] }}</span></td>
                                     <td><span class="status-badge status-{{ ticket['status']|replace(' ', '-') }}">{{ ticket['status'] }}</span></td>
-                                    <td><a href="{{ url_for('it_ticket_detail', ticket_id=ticket['id']) }}" class="button button-small">Open</a></td>
+                                    <td>{{ ticket['updated_at'][:10] }}</td>
+                                    <td><a href="{{ url_for('it_ticket_detail', ticket_id=ticket['id']) }}" class="button button-small">View</a></td>
                                 </tr>
                             {% else %}
                                 <tr><td colspan="7" class="empty-row">No tickets match the selected filters.</td></tr>
