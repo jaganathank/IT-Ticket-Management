@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for, session, flash, g
+from flask import Flask, render_template, request, redirect, url_for, session, flash, g, jsonify
 from database.models import (
     init_db,
     get_user,
@@ -154,6 +154,17 @@ def raise_ticket():
             flash('Please complete the ticket title and description.', 'warning')
         else:
             ticket_id = create_ticket(title, category, priority, severity, description, g.user['id'])
+            
+            # Create notifications for all IT admins about the new ticket
+            it_admins = get_all_it_members()
+            for admin in it_admins:
+                create_notification(
+                    admin['id'],
+                    ticket_id,
+                    f"New ticket #{ticket_id}: {title} created by {g.user['fullname']}",
+                    'new_ticket'
+                )
+            
             flash('Ticket submitted successfully.', 'success')
             return redirect(url_for('ticket_details', ticket_id=ticket_id))
     return render_template(
@@ -313,7 +324,7 @@ if __name__ == '__main__':
 def api_notifications():
     """API endpoint to fetch notifications for the logged-in user"""
     notifications = get_notifications(g.user['id'])
-    return {
+    return jsonify({
         'notifications': [
             {
                 'id': n['id'],
@@ -325,4 +336,4 @@ def api_notifications():
             }
             for n in notifications
         ]
-    }
+    })

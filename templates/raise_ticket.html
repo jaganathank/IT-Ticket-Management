@@ -95,6 +95,14 @@
                             {% endfor %}
                         </select>
                     </div>
+                    <div>
+                        <label>Severity</label>
+                        <select name="severity" required>
+                            {% for severity in severities %}
+                                <option value="{{ severity }}" {% if severity == 'Minor' %}selected{% endif %}>{{ severity }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                     <div class="full-width">
                         <label>Subject</label>
                         <input type="text" name="title" required placeholder="Brief summary of the issue">

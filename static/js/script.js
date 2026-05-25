@@ -127,7 +127,13 @@ document.addEventListener('DOMContentLoaded', function () {
     setInterval(checkForNotifications, 30000);
     
     function checkForNotifications() {
-        // This would fetch notifications from the server
-        // For now, it's a placeholder for future implementation
+        // Check if notification dropdown is open and refresh if it is
+        const notificationList = document.getElementById('notification-list');
+        if (!notificationList) return;
+        
+        const dropdown = notificationList.closest('.notification-dropdown');
+        if (dropdown && dropdown.classList.contains('active')) {
+            loadNotifications();
+        }
     }
 });
